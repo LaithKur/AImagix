@@ -1,140 +1,276 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+  background-color: #f1f1f1;
   color: #333;
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-mode {
-  background-color: #121212;
+body.dark {
+  background-color: #1e1e1e;
   color: #eee;
 }
 
-#loginIcon {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  cursor: pointer;
-  z-index: 1000;
+.header {
+  background-color: #4da6ff;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#authSection, #adminSection {
-  margin: 80px auto 20px;
-  max-width: 400px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.title {
+  margin: 0;
+  font-size: 1.8rem;
+  text-align: center;
+  flex-grow: 1;
 }
 
-.dark-mode #authSection,
-.dark-mode #adminSection {
-  background: #1f1f1f;
-}
-
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.icons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 button {
-  background-color: #2196F3;
-  color: white;
-  cursor: pointer;
+  padding: 0.5rem;
   border: none;
-  font-weight: bold;
+  cursor: pointer;
 }
 
-button:hover {
-  background-color: #0b7dda;
-}
-
-#imageGrid {
+.grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  padding: 20px;
+  padding: 1rem;
+  gap: 1rem;
 }
 
 .image-card {
-  position: relative;
-  width: 220px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  background-color: white;
+  border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.image-card:hover {
-  transform: scale(1.02);
-}
-
-.dark-mode .image-card {
-  background: #2c2c2c;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
 }
 
 .image-card img {
   width: 100%;
-  display: block;
-  cursor: pointer;
+  height: auto;
 }
 
-.image-actions {
+.controls {
+  padding: 0.5rem;
   display: flex;
   justify-content: space-around;
-  padding: 10px;
 }
 
-.image-actions button {
-  padding: 5px 10px;
-  font-size: 14px;
-}
-
-#modal {
+.admin-only {
   display: none;
+}
+
+.download-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* نافذة تسجيل الدخول */
+.modal {
   position: fixed;
-  z-index: 2000;
-  left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#modalImg {
-  max-width: 90%;
-  max-height: 90%;
-  border: 5px solid white;
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
   border-radius: 10px;
+  text-align: center;
+  width: 300px;
 }
 
-#modalClose {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 36px;
-  color: white;
-  cursor: pointer;
+.modal-content input {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
 }
-
-#adminInfo {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background: #2196F3;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 8px;
+.admin-only {
+  display: none;
+}
+.image-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
+}
+
+.controls {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.notification.show {
+  opacity: 1;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+.image-name {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.upload-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #4da6ff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  user-select: none;
+  text-align: center;
+}
+
+.upload-label:focus {
+  outline: 2px solid #004a99;
+  outline-offset: 2px;
+}
+
+.admin-section {
+  background-color: #e0f0ff;
+  padding: 1rem;
+  border-radius: 10px;
+  max-width: 350px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+}
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.controls .top-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.download-btn, .delete-btn, .rename-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease;
+  min-width: 70px;
+  text-align: center;
+}
+
+.download-btn {
+  background-color: #4CAF50;
+}
+
+.download-btn:hover:not(.disabled) {
+  background-color: #45a049;
+}
+
+.download-btn.disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.rename-btn {
+  background-color: #3498db;
+  margin-top: 3px;
+}
+
+.rename-btn:hover {
+  background-color: #2980b9;
+}
+#addImageSection {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  z-index: 999;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#imageUpload {
+  flex: 1 1 150px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#imageNameInput {
+  flex: 2 1 200px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#addImageBtn {
+  padding: 8px 18px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex: 0 0 auto;
+}
+
+#addImageBtn:hover {
+  background-color: #0056b3;
+}
+.image-name {
+  color: black !important;
 }
