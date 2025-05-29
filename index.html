@@ -10,10 +10,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7745563383648827"
-     crossorigin="anonymous"></script>
 </head>
 <body>
   <header class="header">
@@ -22,20 +18,17 @@
     <button id="notifyBtn" title="الإشعارات">🔔</button>
     <div class="icons">
       <button id="authIcon" title="تسجيل الدخول / إنشاء حساب">🔐</button>
-      <button id="darkModeToggle" title="الوضع الليلي">🌙</button>
+      <button id="darkModeToggle" title="الوضع الليلي">🌙</button> 
     </div>
   </header>
 
-  <!-- إعلان في أعلى الصفحة -->
-  <div style="text-align: center; margin: 20px 0;">
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-7745563383648827"
-      data-ad-slot="5462754225"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+ <div id="deviceFilter" class="device-filter">
+  <button data-device="all" class="active">الكل</button>
+  <button data-device="mobile">موبايل</button>
+  <button data-device="tablet">آيباد</button>
+  <button data-device="desktop">كمبيوتر</button>
+</div>
+
 
   <!-- نافذة تسجيل الدخول -->
   <div id="authModal" class="modal hidden">
@@ -46,29 +39,51 @@
       <input type="password" id="passwordInput" placeholder="كلمة المرور" />
       <button id="loginBtn">تسجيل الدخول</button>
       <button id="registerBtn">إنشاء حساب</button>
+      <button id="googleLoginBtn">تسجيل الدخول باستخدام جوجل</button>
+
     </div>
   </div>
 
   <!-- شبكة الصور -->
-  <main id="imageGrid" class="grid"></main>
+ <main id="imageGrid" class="grid"></main>
 
-  <!-- إعلان أسفل شبكة الصور -->
-  <div style="text-align: center; margin: 40px 0;">
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-7745563383648827"
-      data-ad-slot="7461117931"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+
+  
+
+  
 
   <!-- أدوات الأدمن -->
   <div id="adminControls" style="margin-top: 20px;">
     <input type="file" id="imageUpload" accept="image/*" />
     <input type="text" id="imageNameInput" placeholder="أدخل اسم الصورة" />
+    <select id="deviceSelect">
+  <option value="all">الجميع</option>
+  <option value="mobile">جوال</option>
+  <option value="desktop">كمبيوتر</option>
+  <option value="tablet">تابلت</option>
+</select>
+
     <button id="addImageBtn">إضافة صورة</button>
   </div>
+
+
+  <footer style="background-color: #2c2c2c; color: white; padding: 20px; text-align: center; margin-top: 30px;">
+  <div style="max-width: 800px; margin: auto;">
+    <h3 style="margin-bottom: 10px;">عن AImagix</h3>
+    <p style="font-size: 14px;">
+      AImagix هو موقع مخصص لعرض صور من إنشاء الذكاء الاصطناعي، مصنفة حسب نوع الجهاز .
+      .يتيح للمستخدمين تحميل الصور بسهولة .
+    </p>
+
+    <hr style="margin: 20px 0; border-color: #555;">
+
+    <h4>للتواصل:</h4>
+    <p style="font-size: 14px;">
+      📧 البريد الإلكتروني: <a href="mailto:aimagix.contact@gmail.com" style="color: #00bfff;">aimagix.contact@gmail.com</a><br>
+
+    </p>
+  </div>
+</footer>
 
   <div id="notification" class="notification hidden"></div>
   <script src="script.js"></script>

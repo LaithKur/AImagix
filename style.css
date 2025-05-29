@@ -36,7 +36,6 @@ button {
   border: none;
   cursor: pointer;
 }
-
 .grid {
   display: flex;
   flex-wrap: wrap;
@@ -273,4 +272,56 @@ button {
 }
 .image-name {
   color: black !important;
+}
+
+.AI{
+  padding: 0.5rem 1rem;
+  background-color: #4da6ff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  user-select: none;
+  text-align: center;
+}
+.AI:hover{
+  outline: 2px solid #004a99;
+  outline-offset: 2px;
+}
+
+
+.device-filter {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.device-filter button {
+  background-color: #ddd;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.device-filter button.active {
+  background-color: #007bff;
+  color: white;
+}
+.star {
+  font-size: 1.5rem;
+  color: #ccc;
+  transition: color 0.3s;
+}
+.star.active {
+  color: #ffc107; /* أصفر */
+}
+.star:hover {
+  color: #ffdb70; /* أصفر فاتح عند المرور */
+  cursor: pointer;
+}
+.download-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }

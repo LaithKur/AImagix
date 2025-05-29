@@ -1,3 +1,6 @@
+let currentDeviceFilter = 'all';  // فلتر الجهاز الافتراضي
+
+// دالة عرض الإشعارات (موجودة كما هي)
 function showNotification(message) {
   const notif = document.createElement('div');
   notif.textContent = message;
@@ -28,7 +31,7 @@ function showNotification(message) {
   }, 3000);
 }
 
-// Firebase الإعدادات
+// Firebase الإعدادات (كما هي)
 const firebaseConfig = {
   apiKey: "AIzaSyDqJSfTPVe-Y6zSjZyBA39ANYC97JNcz8o",
   authDomain: "aimagix-8c704.firebaseapp.com",
@@ -64,6 +67,21 @@ document.getElementById('loginBtn').onclick = () => {
     })
     .catch(() => showNotification("البريد الإلكتروني أو كلمة المرور غير صحيحة"));
 };
+// تعريف مزود جوجل
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// حدث تسجيل الدخول بجوجل
+document.getElementById('googleLoginBtn').onclick = () => {
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      showNotification(`تم تسجيل الدخول كمستخدم: ${result.user.email}`);
+      document.getElementById('authModal').classList.add('hidden');
+    })
+    .catch((error) => {
+      showNotification(`حدث خطأ أثناء تسجيل الدخول بجوجل: ${error.message}`);
+    });
+};
+
 
 document.getElementById('registerBtn').onclick = () => {
   const email = document.getElementById('emailInput').value;
@@ -79,15 +97,24 @@ document.getElementById('registerBtn').onclick = () => {
       showNotification("تم إنشاء الحساب بنجاح");
       document.getElementById('authModal').classList.add('hidden');
     })
-    .catch(err => showNotification("حدث خطأ أثناء إنشاء الحساب: " + err.message));
+    .catch(err => {
+      if (err.code === 'auth/email-already-in-use') {
+        showNotification("هذا الإيميل موجود بالفعل");
+      } else {
+        showNotification("حدث خطأ أثناء إنشاء الحساب: " + err.message);
+      }
+    });
+    
+    
 };
 
 document.getElementById('addImageBtn').onclick = async () => {
   const file = document.getElementById('imageUpload').files[0];
   const name = document.getElementById('imageNameInput').value.trim();
+  const device = document.getElementById('deviceSelect').value;
 
-  if (!file || !name) {
-    showNotification('يرجى اختيار صورة وكتابة اسم للصورة');
+  if (!file || !name || !device) {
+    showNotification('يرجى اختيار صورة وكتابة اسم للصورة واختيار الجهاز');
     return;
   }
 
@@ -106,17 +133,20 @@ document.getElementById('addImageBtn').onclick = async () => {
     await db.collection('images').add({
       name,
       url: data.secure_url,
+      device,  // حفظ نوع الجهاز مع الصورة
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     showNotification("تم رفع الصورة بنجاح");
     document.getElementById('imageUpload').value = '';
     document.getElementById('imageNameInput').value = '';
+    document.getElementById('deviceSelect').value = 'all';
     loadImages();
   } catch (err) {
     showNotification("حدث خطأ أثناء رفع الصورة: " + err.message);
   }
 };
+
 
 async function deleteImage(id) {
   if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
@@ -165,7 +195,6 @@ function downloadImage(url, name) {
     .catch(() => showNotification('❌ فشل تحميل الصورة'));
 }
 
-
 let allImages = [];
 
 async function loadImages(filter = '') {
@@ -179,30 +208,130 @@ async function loadImages(filter = '') {
 
   allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-  const filteredImages = allImages.filter(img => img.name.toLowerCase().includes(filter.toLowerCase()));
+  // فلترة حسب الاسم والجهاز
+  const filteredImages = allImages.filter(img => {
+    const matchName = img.name.toLowerCase().includes(filter.toLowerCase());
+    const matchDevice = currentDeviceFilter === 'all' || (img.device && img.device === currentDeviceFilter);
+    return matchName && matchDevice;
+  });
 
   filteredImages.forEach(data => {
-    const card = document.createElement('div');
-    card.className = 'image-card';
+  const card = document.createElement('div');
+  card.className = 'image-card';
 
-    card.innerHTML = `
-      <img src="${data.url}" alt="${data.name}" />
-      <div class="image-name">${data.name}</div>
-      <div class="controls">
-        <a href="#" 
-           ${!user ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"' : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}>
-           Download
-        </a>
-        ${isAdmin ? `
-          <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete</button>
-          <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename</button>
-        ` : ''}
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+  // حساب متوسط التقييم
+  const ratings = data.ratings || {};
+  const ratingValues = Object.values(ratings);
+  const ratingCount = ratingValues.length;
+  const totalRating = ratingValues.reduce((a, b) => a + b, 0);
+  const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 'لا يوجد';
+
+  // تقييم المستخدم الحالي
+  const userRating = user && ratings[user.uid] ? ratings[user.uid] : 0;
+
+  // إنشاء نجوم التقييم ديناميكيًا
+  function createStars() {
+    return [1, 2, 3, 4, 5].map(star => {
+      const isActive = userRating >= star;
+      return `<span 
+        class="star${isActive ? ' active' : ''}" 
+        data-id="${data.id}" 
+        data-star="${star}" 
+        title="تقييم ${star} نجوم"
+        style="cursor: ${user ? 'pointer' : 'not-allowed'}"
+      >★</span>`;
+    }).join('');
+  }
+
+  card.innerHTML = `
+    <img src="${data.url}" alt="${data.name}" />
+    <div class="image-name">${data.name}</div>
+    <div class="image-device">الجهاز: ${data.device || 'غير محدد'}</div>
+    <div class="image-rating">
+      <span>⭐ التقييم:</span>
+      ${createStars()}
+      <div class="average-rating">متوسط التقييم: ${averageRating}</div>
+    </div>
+    <div class="controls">
+      <a href="#"
+         ${!user
+           ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"'
+           : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}
+      >Download</a>
+      ${isAdmin ? `
+        <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete</button>
+        <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename</button>
+      ` : ''}
+    </div>
+  `;
+
+  // تحديث النجوم ومتوسط التقييم في الواجهة بعد التقييم
+  function updateStars(newRating) {
+    card.querySelectorAll('.star').forEach(starEl => {
+      const starValue = parseInt(starEl.getAttribute('data-star'), 10);
+      starEl.classList.toggle('active', starValue <= newRating);
+    });
+
+    // حساب متوسط التقييم الجديد وعرضه
+    const updatedRatings = { ...ratings, [user.uid]: newRating };
+    const values = Object.values(updatedRatings);
+    const avg = values.length ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : 'لا يوجد';
+    card.querySelector('.average-rating').textContent = `متوسط التقييم: ${avg}`;
+  }
+
+  // تفعيل حدث النقر على النجوم للمستخدمين المسجلين فقط
+  if (user) {
+    card.querySelectorAll('.star').forEach(starEl => {
+      starEl.addEventListener('click', async () => {
+        const imgId = starEl.getAttribute('data-id');
+        const rating = parseInt(starEl.getAttribute('data-star'), 10);
+
+        try {
+          const imgRef = db.collection('images').doc(imgId);
+          const imgDoc = await imgRef.get();
+
+          if (!imgDoc.exists) throw new Error("الصورة غير موجودة");
+
+          const imgData = imgDoc.data();
+          const currentRatings = imgData.ratings || {};
+
+          const newRatings = { ...currentRatings, [user.uid]: rating };
+
+          await imgRef.update({ ratings: newRatings });
+
+          showNotification('✅ تم حفظ التقييم');
+          updateStars(rating);
+        } catch (err) {
+          console.error(err);
+          showNotification('❌ حدث خطأ أثناء حفظ التقييم');
+        }
+      });
+    });
+  }
+
+  grid.appendChild(card);
+});
+
+
+
 }
 
+
+document.getElementById('deviceFilter').addEventListener('click', e => {
+  if (e.target.tagName === 'BUTTON') {
+    currentDeviceFilter = e.target.getAttribute('data-device');
+
+    // إزالة التفعيل من جميع الأزرار ثم تفعيل الزر الحالي
+    document.querySelectorAll('#deviceFilter button').forEach(btn => btn.classList.remove('active'));
+    e.target.classList.add('active');
+
+    // إعادة تحميل الصور مع الفلتر الجديد
+    loadImages(document.getElementById('searchInput').value.trim());
+  }
+});
+
+
+// فلترة حسب البحث النصي (الاسم)
 document.getElementById('searchInput').addEventListener('input', (e) => {
   const query = e.target.value.trim();
   loadImages(query);
@@ -228,3 +357,6 @@ auth.onAuthStateChanged(user => {
     };
   }
 });
+
+
+
