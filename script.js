@@ -35,11 +35,14 @@ function showNotification(message) {
 const firebaseConfig = {
   apiKey: "AIzaSyDqJSfTPVe-Y6zSjZyBA39ANYC97JNcz8o",
   authDomain: "aimagix-8c704.firebaseapp.com",
+  databaseURL: "https://aimagix-8c704-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "aimagix-8c704",
-  storageBucket: "aimagix-8c704.appspot.com",
+  storageBucket: "aimagix-8c704.firebasestorage.app",
   messagingSenderId: "898141910343",
-  appId: "1:898141910343:web:9d7d94be44380d63c18862"
+  appId: "1:898141910343:web:9d7d94be44380d63c18862",
+  measurementId: "G-08RGJ7KZVK"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
