@@ -60,13 +60,34 @@ document.getElementById('closeAuth').onclick = () => {
 document.getElementById('loginBtn').onclick = () => {
   const email = document.getElementById('emailInput').value;
   const password = document.getElementById('passwordInput').value;
+
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      showNotification("تم تسجيل الدخول بنجاح");
-      document.getElementById('authModal').classList.add('hidden');
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      if (user.emailVerified) {
+        showNotification("✅ تم تسجيل الدخول بنجاح");
+      } else {
+        auth.signOut();
+        showNotification("⚠️ لم يتم تأكيد البريد الإلكتروني. تم تسجيل الخروج.");
+      }
+
+      localStorage.setItem('authModalClosed', 'true');
+setTimeout(() => {
+  location.reload();
+}, 1000);
+
     })
-    .catch(() => showNotification("البريد الإلكتروني أو كلمة المرور غير صحيحة"));
+    .catch(() => {
+      showNotification("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      setTimeout(() => {
+        location.reload();
+      }, 2500);
+    });
 };
+
+
+
 // تعريف مزود جوجل
 const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -93,20 +114,55 @@ document.getElementById('registerBtn').onclick = () => {
   }
 
   auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      showNotification("تم إنشاء الحساب بنجاح");
-      document.getElementById('authModal').classList.add('hidden');
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      user.sendEmailVerification()
+        .then(() => {
+          showNotification("✅ تم إرسال رسالة تحقق إلى بريدك. لديك 5 دقائق للتأكيد.");
+          
+          // بدء مؤقت حذف بعد 5 دقائق إذا لم يتم تأكيد البريد
+          setTimeout(() => {
+            user.reload().then(() => {
+              if (!user.emailVerified) {
+                user.delete().then(() => {
+                  console.log("تم حذف الحساب لعدم تأكيد البريد خلال 5 دقائق.");
+                });
+              }
+            });
+          }, 5 * 60 * 1000);
+
+          auth.signOut(); // طرده مؤقتًا حتى يؤكد
+        })
+        .catch((error) => {
+          showNotification("❌ خطأ في إرسال رسالة التحقق: " + error.message);
+        });
+
+      // تحديث الصفحة فورًا
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.code === 'auth/email-already-in-use') {
-        showNotification("هذا الإيميل موجود بالفعل");
+        showNotification("❌ هذا الإيميل موجود بالفعل");
       } else {
-        showNotification("حدث خطأ أثناء إنشاء الحساب: " + err.message);
+        showNotification("❌ حدث خطأ أثناء إنشاء الحساب: " + err.message);
       }
+      
+
+     localStorage.setItem('authModalClosed', 'true');
+setTimeout(() => {
+  location.reload();
+}, 2500);
+
     });
-    
-    
 };
+
+
+
+
+
 
 document.getElementById('addImageBtn').onclick = async () => {
   const file = document.getElementById('imageUpload').files[0];
@@ -257,10 +313,10 @@ async function loadImages(filter = '') {
          ${!user
            ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"'
            : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}
-      >Download</a>
+      >Download ⬇️</a>
       ${isAdmin ? `
-        <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete</button>
-        <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename</button>
+        <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete 🗑️</button>
+        <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename ✏️</button>
       ` : ''}
     </div>
   `;
@@ -358,5 +414,8 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-
+if (localStorage.getItem('authModalClosed') === 'true') {
+  document.getElementById('authModal').classList.add('hidden');
+  localStorage.removeItem('authModalClosed');
+}
 

@@ -12,9 +12,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 </head>
 <body>
+  
   <header class="header">
     <h1 class="title">AImagix</h1>
-    <input type="text" id="searchInput" placeholder="ابحث عن صورة..." />
+    <input type="text" id="searchInput" placeholder=" 🔍ابحث عن صورة..." />
     <button id="notifyBtn" title="الإشعارات">🔔</button>
     <div class="icons">
       <button id="authIcon" title="تسجيل الدخول / إنشاء حساب">🔐</button>
@@ -23,10 +24,10 @@
   </header>
 
  <div id="deviceFilter" class="device-filter">
-  <button data-device="all" class="active">الكل</button>
-  <button data-device="mobile">موبايل</button>
-  <button data-device="tablet">آيباد</button>
-  <button data-device="desktop">كمبيوتر</button>
+  <button data-device="all" class="active">الكل 📱💻</button>
+  <button data-device="mobile">موبايل 📱 </button>
+  <button data-device="tablet">آيباد 📱</button>
+  <button data-device="desktop">كمبيوتر 💻</button>
 </div>
 
 
@@ -37,9 +38,15 @@
       <h2>تسجيل الدخول / إنشاء حساب</h2>
       <input type="email" id="emailInput" placeholder="البريد الإلكتروني" />
       <input type="password" id="passwordInput" placeholder="كلمة المرور" />
-      <button id="loginBtn">تسجيل الدخول</button>
-      <button id="registerBtn">إنشاء حساب</button>
-      <button id="googleLoginBtn">تسجيل الدخول باستخدام جوجل</button>
+      <button from id="loginBtn">تسجيل الدخول</button>
+      <button from id="registerBtn">إنشاء حساب</button>
+      <button id="googleLoginBtn"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 533.5 544.3">
+  <path fill="#4285f4" d="M533.5 278.4c0-17.4-1.4-34.2-4-50.4H272v95.3h146.9c-6.4 34.5-25.6 63.7-54.7 83.2v68h88.4c51.6-47.5 80.9-117.5 80.9-196.1z"/>
+  <path fill="#34a853" d="M272 544.3c73.8 0 135.7-24.4 180.9-66.2l-88.4-68c-24.6 16.5-56.2 26.2-92.5 26.2-71 0-131.1-47.9-152.6-112.3H27.9v70.7C73.1 480.9 166.6 544.3 272 544.3z"/>
+  <path fill="#fbbc04" d="M119.4 323.9c-10.7-31.5-10.7-65.7 0-97.2v-70.7H27.9c-32.1 63.7-32.1 138.9 0 202.6l91.5-70.7z"/>
+  <path fill="#ea4335" d="M272 107.7c39.9-.6 78.3 13.9 107.7 40.8l80.4-80.4C407.6 24.2 345.7 0 272 0 166.6 0 73.1 63.4 27.9 168l91.5 70.7C140.9 155.6 201 107.7 272 107.7z"/>
+</svg>
+</button>
 
     </div>
   </div>

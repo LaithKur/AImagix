@@ -325,3 +325,7 @@ button {
   opacity: 0.5;
   pointer-events: none;
 }
+
+#appContent {
+  display: none;
+}
