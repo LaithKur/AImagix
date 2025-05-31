@@ -277,6 +277,10 @@ function downloadImage(url, name) {
 
 let allImages = [];
 
+let currentPage = 1;
+const imagesPerPage = 27;
+let filteredImages = [];
+
 async function loadImages(filter = '') {
   const grid = document.getElementById('imageGrid');
   grid.innerHTML = '';
@@ -289,112 +293,137 @@ async function loadImages(filter = '') {
   allImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   // فلترة حسب الاسم والجهاز
-  const filteredImages = allImages.filter(img => {
+  filteredImages = allImages.filter(img => {
     const matchName = img.name.toLowerCase().includes(filter.toLowerCase());
     const matchDevice = currentDeviceFilter === 'all' || (img.device && img.device === currentDeviceFilter);
     return matchName && matchDevice;
   });
 
-  filteredImages.forEach(data => {
-  const card = document.createElement('div');
-  card.className = 'image-card';
+  // تقسيم الصفحات
+  const totalPages = Math.ceil(filteredImages.length / imagesPerPage);
+  const startIndex = (currentPage - 1) * imagesPerPage;
+  const endIndex = startIndex + imagesPerPage;
+  const imagesToDisplay = filteredImages.slice(startIndex, endIndex);
 
-  // حساب متوسط التقييم
-  const ratings = data.ratings || {};
-  const ratingValues = Object.values(ratings);
-  const ratingCount = ratingValues.length;
-  const totalRating = ratingValues.reduce((a, b) => a + b, 0);
-  const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 'لا يوجد';
+  imagesToDisplay.forEach(data => {
+    const card = document.createElement('div');
+    card.className = 'image-card';
+    
+    const ratings = data.ratings || {};
+    const ratingValues = Object.values(ratings);
+    const ratingCount = ratingValues.length;
+    const totalRating = ratingValues.reduce((a, b) => a + b, 0);
+    const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 'لا يوجد';
+    const userRating = user && ratings[user.uid] ? ratings[user.uid] : 0;
 
-  // تقييم المستخدم الحالي
-  const userRating = user && ratings[user.uid] ? ratings[user.uid] : 0;
+    function createStars() {
+      return [1, 2, 3, 4, 5].map(star => {
+        const isActive = userRating >= star;
+        return `<span 
+          class="star${isActive ? ' active' : ''}" 
+          data-id="${data.id}" 
+          data-star="${star}" 
+          title="تقييم ${star} نجوم"
+          style="cursor: ${user ? 'pointer' : 'not-allowed'}"
+        >★</span>`;
+      }).join('');
+    }
 
-  // إنشاء نجوم التقييم ديناميكيًا
-  function createStars() {
-    return [1, 2, 3, 4, 5].map(star => {
-      const isActive = userRating >= star;
-      return `<span 
-        class="star${isActive ? ' active' : ''}" 
-        data-id="${data.id}" 
-        data-star="${star}" 
-        title="تقييم ${star} نجوم"
-        style="cursor: ${user ? 'pointer' : 'not-allowed'}"
-      >★</span>`;
-    }).join('');
-  }
+    card.innerHTML = `
+      <img src="${data.url}" alt="${data.name}" />
+      <div class="image-name">${data.name}</div>
+      <div class="image-device">الجهاز: ${data.device || 'غير محدد'}</div>
+      <div class="image-rating">
+        <span>⭐ التقييم:</span>
+        ${createStars()}
+        <div class="average-rating">متوسط التقييم: ${averageRating}</div>
+      </div>
+      <div class="controls">
+        <a href="#"
+           ${!user
+             ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"'
+             : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}
+        >Download ⬇️</a>
+        ${isAdmin ? `
+          <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete 🗑️</button>
+          <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename ✏️</button>
+        ` : ''}
+      </div>
+    `;
 
-  card.innerHTML = `
-    <img src="${data.url}" alt="${data.name}" />
-    <div class="image-name">${data.name}</div>
-    <div class="image-device">الجهاز: ${data.device || 'غير محدد'}</div>
-    <div class="image-rating">
-      <span>⭐ التقييم:</span>
-      ${createStars()}
-      <div class="average-rating">متوسط التقييم: ${averageRating}</div>
-    </div>
-    <div class="controls">
-      <a href="#"
-         ${!user
-           ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"'
-           : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}
-      >Download ⬇️</a>
-      ${isAdmin ? `
-        <button class="delete-btn" onclick="deleteImage('${data.id}')">Delete 🗑️</button>
-        <button class="rename-btn" onclick="renameImage('${data.id}', '${data.name}')">Rename ✏️</button>
-      ` : ''}
-    </div>
-  `;
-
-  // تحديث النجوم ومتوسط التقييم في الواجهة بعد التقييم
-  function updateStars(newRating) {
-    card.querySelectorAll('.star').forEach(starEl => {
-      const starValue = parseInt(starEl.getAttribute('data-star'), 10);
-      starEl.classList.toggle('active', starValue <= newRating);
-    });
-
-    // حساب متوسط التقييم الجديد وعرضه
-    const updatedRatings = { ...ratings, [user.uid]: newRating };
-    const values = Object.values(updatedRatings);
-    const avg = values.length ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : 'لا يوجد';
-    card.querySelector('.average-rating').textContent = `متوسط التقييم: ${avg}`;
-  }
-
-  // تفعيل حدث النقر على النجوم للمستخدمين المسجلين فقط
-  if (user) {
-    card.querySelectorAll('.star').forEach(starEl => {
-      starEl.addEventListener('click', async () => {
-        const imgId = starEl.getAttribute('data-id');
-        const rating = parseInt(starEl.getAttribute('data-star'), 10);
-
-        try {
-          const imgRef = db.collection('images').doc(imgId);
-          const imgDoc = await imgRef.get();
-
-          if (!imgDoc.exists) throw new Error("الصورة غير موجودة");
-
-          const imgData = imgDoc.data();
-          const currentRatings = imgData.ratings || {};
-
-          const newRatings = { ...currentRatings, [user.uid]: rating };
-
-          await imgRef.update({ ratings: newRatings });
-
-          showNotification('✅ تم حفظ التقييم');
-          updateStars(rating);
-        } catch (err) {
-          console.error(err);
-          showNotification('❌ حدث خطأ أثناء حفظ التقييم');
-        }
+    function updateStars(newRating) {
+      card.querySelectorAll('.star').forEach(starEl => {
+        const starValue = parseInt(starEl.getAttribute('data-star'), 10);
+        starEl.classList.toggle('active', starValue <= newRating);
       });
-    });
+
+      const updatedRatings = { ...ratings, [user.uid]: newRating };
+      const values = Object.values(updatedRatings);
+      const avg = values.length ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : 'لا يوجد';
+      card.querySelector('.average-rating').textContent = `متوسط التقييم: ${avg}`;
+    }
+
+    if (user) {
+      card.querySelectorAll('.star').forEach(starEl => {
+        starEl.addEventListener('click', async () => {
+          const imgId = starEl.getAttribute('data-id');
+          const rating = parseInt(starEl.getAttribute('data-star'), 10);
+
+          try {
+            const imgRef = db.collection('images').doc(imgId);
+            const imgDoc = await imgRef.get();
+            if (!imgDoc.exists) throw new Error("الصورة غير موجودة");
+
+            const imgData = imgDoc.data();
+            const currentRatings = imgData.ratings || {};
+            const newRatings = { ...currentRatings, [user.uid]: rating };
+
+            await imgRef.update({ ratings: newRatings });
+
+            showNotification('✅ تم حفظ التقييم');
+            updateStars(rating);
+          } catch (err) {
+            console.error(err);
+            showNotification('❌ حدث خطأ أثناء حفظ التقييم');
+          }
+        });
+      });
+    }
+
+    grid.appendChild(card);
+  });
+
+  // ======= أزرار التنقل بين الصفحات =======
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = '';
+
+  if (totalPages > 1) {
+    if (currentPage > 1) {
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = '⬅️ السابق';
+      prevBtn.onclick = () => {
+        currentPage--;
+        loadImages(filter);
+      };
+      pagination.appendChild(prevBtn);
+    }
+
+    const pageIndicator = document.createElement('span');
+    pageIndicator.textContent = `الصفحة ${currentPage} من ${totalPages}`;
+    pagination.appendChild(pageIndicator);
+
+    if (currentPage < totalPages) {
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = 'التالي ➡️';
+      nextBtn.onclick = () => {
+        currentPage++;
+        loadImages(filter);
+      };
+      pagination.appendChild(nextBtn);
+    }
   }
-
-  grid.appendChild(card);
-});
-
-
-
 }
+
 
 
 document.getElementById('deviceFilter').addEventListener('click', e => {
