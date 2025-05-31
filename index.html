@@ -28,7 +28,6 @@
  <div id="deviceFilter" class="device-filter">
   <button data-device="all" class="active">الكل 📱💻</button>
   <button data-device="mobile">موبايل 📱 </button>
-  <button data-device="tablet">آيباد 📱</button>
   <button data-device="desktop">كمبيوتر 💻</button>
 </div>
 
@@ -57,7 +56,11 @@
  <main id="imageGrid" class="grid"></main>
 
 
-  
+ <!-- نافذة تكبير الصورة -->
+<div id="imageModal" class="image-modal hidden">
+  <img id="modalImage" src="" alt="صورة مكبرة" />
+</div>
+
 
   
 
@@ -66,22 +69,23 @@
     <input type="file" id="imageUpload" accept="image/*" />
     <input type="text" id="imageNameInput" placeholder="أدخل اسم الصورة" />
     <select id="deviceSelect">
-  <option value="all">الجميع</option>
   <option value="mobile">جوال</option>
   <option value="desktop">كمبيوتر</option>
-  <option value="tablet">تابلت</option>
 </select>
-
     <button id="addImageBtn">إضافة صورة</button>
   </div>
 
 
   <footer style="background-color: #2c2c2c; color: white; padding: 20px; text-align: center; margin-top: 30px;">
   <div style="max-width: 800px; margin: auto;">
-    <h3 style="margin-bottom: 10px;">عن aipyx</h3>
+    <h3 style="margin-bottom: 10px;">🧠 AIPYX  فن الذكاء الاصطناعي</h3>
     <p style="font-size: 14px;">
-      aipyx هو موقع مخصص لعرض صور من إنشاء الذكاء الاصطناعي، مصنفة حسب نوع الجهاز .
-      .يتيح للمستخدمين تحميل الصور بسهولة.
+       مرحبًا بك في <strong>AIPYX</strong>، حيث يلتقي الإبداع البشري بقوة الذكاء الاصطناعي.<br>
+    نحن منصة متخصصة في عرض وتحميل صور فنية مذهلة تم إنشاؤها باستخدام أحدث تقنيات الذكاء الاصطناعي.<br>
+    نسعى إلى تقديم محتوى بصري ملهم يخدم المصممين، والكتّاب، والمبرمجين، وكل من يبحث عن الإلهام الرقمي.<br>
+    في AIPYX، نؤمن أن الذكاء الاصطناعي ليس مجرد أداة، بل شريك إبداعي يساعدنا على تخطي حدود الخيال.<br>
+    استمتع بالتصفح، احفظ صورك المفضلة، وشارك معنا رحلة الفن القادم من المستقبل.
+  </p>
     </p>
 
     <hr style="margin: 20px 0; border-color: #555;">

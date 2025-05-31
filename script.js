@@ -254,6 +254,27 @@ function downloadImage(url, name) {
     .catch(() => showNotification('❌ فشل تحميل الصورة'));
 }
 
+// تكبير الصورة عند النقر
+  document.addEventListener("click", function (e) {
+    const target = e.target;
+
+    // إذا ضغط المستخدم على صورة داخل الشبكة
+    if (target.tagName === "IMG" && target.closest("#imageGrid")) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
+      modalImg.src = target.src;
+      modal.classList.remove("hidden");
+    }
+
+    // إذا ضغط على أي مكان أثناء عرض الصورة المكبرة
+    const modal = document.getElementById("imageModal");
+    if (!modal.classList.contains("hidden") && (target.id === "imageModal" || target.id === "modalImage")) {
+      modal.classList.add("hidden");
+    }
+  });
+
+
+
 let allImages = [];
 
 async function loadImages(filter = '') {
