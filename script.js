@@ -278,7 +278,7 @@ function downloadImage(url, name) {
 let allImages = [];
 
 let currentPage = 1;
-const imagesPerPage = 27;
+const imagesPerPage = 28;
 let filteredImages = [];
 
 async function loadImages(filter = '') {
