@@ -41,12 +41,12 @@ a{
   position: relative; /* بدل absolute */
   width: 70%;
   max-width: 800px;
-  margin: 1rem auto; /* مركز مع مسافة فوق وتحت */
+  margin: 2rem auto 4rem auto; /* مساحة تحت (4rem) تفصل عن الفوتر */
   background: linear-gradient(to right, #ffffff, #6e6e6e);
   border: 0.5rem solid black;
   padding: 1rem;
   box-sizing: border-box;
-  z-index: 1; /* أقل من 1000 حتى لا تغطي دائماً */
+  z-index: 1;
 }
 .information{
   border:0.3rem solid black;
@@ -76,7 +76,9 @@ a{
   padding: 20px;
   text-align: center;
   width: 100%;
-  margin-top: 30rem;
+  margin-top: 0; /* ممكن تتركها 0 أو أكثر حسب المساحة */
+  position: relative; /* تأكد أنه ليست fixed أو absolute */
+  z-index: 0;
 }
 .a-1{
   color:rgb(0, 179, 255);
