@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIpyx Vision</title>
+  <meta name="description" content="Aipyx هو موقع يضم أفضل صور الذكاء الاصطناعي وأحدث الأفكار التقنية." />
+  <link rel="icon" href="https://i.postimg.cc/C1jmFSnY/Chat-GPT-Image-May-31-2025-08-11-09-PM.png" type="image/png">
+  <link rel="stylesheet" href="AIpyx-Vision.css" />
+  <!-- Firebase Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+</head>
+
+<body>
+  
+  <header class="header">
+    <h1 class="title">AIpyx Vision</h1>
+    <input type="text" id="searchInput" placeholder=" 🔍ابحث عن صورة..." />
+    <button id="notifyBtn" title="الإشعارات">🔔</button>
+    <div class="icons">
+      <button id="authIcon" title="تسجيل الدخول / إنشاء حساب">🔐</button>
+      <button id="darkModeToggle" title="الوضع الليلي">🌙</button> 
+    </div>
+  <button class="button" onclick="history.back()">Back</button>
+  </header>
+  
+
+ <div id="deviceFilter" class="device-filter">
+  <button data-device="all" class="active">الكل 📱💻</button>
+  <button data-device="mobile">موبايل 📱 </button>
+  <button data-device="desktop">كمبيوتر 💻</button>
+</div>
+
+
+  <!-- نافذة تسجيل الدخول -->
+  <div id="authModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeAuth" class="close">&times;</span>
+      <h2>تسجيل الدخول / إنشاء حساب</h2>
+      <input type="email" id="emailInput" placeholder="البريد الإلكتروني" />
+      <input type="password" id="passwordInput" placeholder="كلمة المرور" />
+      <button from id="loginBtn">تسجيل الدخول</button>
+      <button from id="registerBtn">إنشاء حساب</button>
+      <button id="googleLoginBtn"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 533.5 544.3">
+  <path fill="#4285f4" d="M533.5 278.4c0-17.4-1.4-34.2-4-50.4H272v95.3h146.9c-6.4 34.5-25.6 63.7-54.7 83.2v68h88.4c51.6-47.5 80.9-117.5 80.9-196.1z"/>
+  <path fill="#34a853" d="M272 544.3c73.8 0 135.7-24.4 180.9-66.2l-88.4-68c-24.6 16.5-56.2 26.2-92.5 26.2-71 0-131.1-47.9-152.6-112.3H27.9v70.7C73.1 480.9 166.6 544.3 272 544.3z"/>
+  <path fill="#fbbc04" d="M119.4 323.9c-10.7-31.5-10.7-65.7 0-97.2v-70.7H27.9c-32.1 63.7-32.1 138.9 0 202.6l91.5-70.7z"/>
+  <path fill="#ea4335" d="M272 107.7c39.9-.6 78.3 13.9 107.7 40.8l80.4-80.4C407.6 24.2 345.7 0 272 0 166.6 0 73.1 63.4 27.9 168l91.5 70.7C140.9 155.6 201 107.7 272 107.7z"/>
+</svg>
+</button>
+
+    </div>
+  </div>
+
+  <!-- شبكة الصور -->
+ <main id="imageGrid" class="grid"></main>
+
+
+ <!-- نافذة تكبير الصورة -->
+<div id="imageModal" class="image-modal hidden">
+  <img id="modalImage" src="" alt="صورة مكبرة" />
+</div>
+
+<div id="pagination" class="pagination-controls" ></div>
+
+  <!-- أدوات الأدمن -->
+  <div id="adminControls" style="margin-top: 20px;">
+    <input type="file" id="imageUpload" accept="image/*" />
+    <input type="text" id="imageNameInput" placeholder="أدخل اسم الصورة" />
+    <select id="deviceSelect">
+  <option value="mobile">جوال</option>
+  <option value="desktop">كمبيوتر</option>
+</select>
+    <button id="addImageBtn">إضافة صورة</button>
+  </div>
+
+
+  <footer style="background-color: #2c2c2c; color: white; padding: 20px; text-align: center; margin-top: 30px;">
+  <div style="max-width: 800px; margin: auto;">
+
+    <hr style="margin: 20px 0; border-color: #555;">
+<p>© 2025 AIpyx. جميع الحقوق محفوظة. لا يُسمح بإعادة استخدام المحتوى أو الصور بدون إذن. <a href="/rights.html" style="color: #00bfff;">سياسة الاستخدام</a>
+</p>
+    <h4>للتواصل:</h4>
+    <p style="font-size: 14px;">
+      📧 البريد الإلكتروني: <a href="mailto:aipyx.contact@gmail.com" style="color: #00bfff;">aipyx.contact@gmail.com</a><br>
+
+    </p>
+  </div>
+</footer>
+
+  <div id="notification" class="notification hidden"></div>
+  <script src="AIpyx-Vision.js"></script>
+</body>
+</html>
