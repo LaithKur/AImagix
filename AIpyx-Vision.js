@@ -474,4 +474,3 @@ if (localStorage.getItem('authModalClosed') === 'true') {
   document.getElementById('authModal').classList.add('hidden');
   localStorage.removeItem('authModalClosed');
 }
-
