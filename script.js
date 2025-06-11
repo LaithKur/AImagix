@@ -1,15 +1,15 @@
-function showLanguage(langId) {
-    const sections = ['Arabic', 'English', 'Deutsch'];
-    sections.forEach(id => {
-      document.getElementById(id).style.display = (id === langId) ? 'block' : 'none';
-    });
-  }
-  function showLanguage1(langId) {
-    const sections = ['Arabic-1', 'English-1', 'Deutsch-1'];
-    sections.forEach(id => {
-      document.getElementById(id).style.display = (id === langId) ? 'block' : 'none';
-    });
-  }
+function showLanguage(langPrefix) {
+  const allPrefixes = ['Arabic', 'English', 'Deutsch'];
+  allPrefixes.forEach(prefix => {
+    const main = document.getElementById(prefix);
+    const sub = document.getElementById(prefix + '-1');
+    
+    if (main) main.style.display = (prefix === langPrefix) ? 'block' : 'none';
+    if (sub) sub.style.display = (prefix === langPrefix) ? 'block' : 'none';
+  });
+}
+
+  
 const buttons = document.querySelectorAll('.backBtn');
 const message = document.getElementById('message');
 

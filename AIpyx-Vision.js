@@ -1,6 +1,6 @@
-let currentDeviceFilter = 'all';  // فلتر الجهاز الافتراضي
+let currentDeviceFilter = 'all';  
 
-// دالة عرض الإشعارات (موجودة كما هي)
+
 function showNotification(message) {
   const notif = document.createElement('div');
   notif.textContent = message;
@@ -31,7 +31,7 @@ function showNotification(message) {
   }, 3000);
 }
 
-// Firebase الإعدادات (كما هي)
+
 const firebaseConfig = {
   apiKey: "AIzaSyDqJSfTPVe-Y6zSjZyBA39ANYC97JNcz8o",
   authDomain: "aimagix-8c704.firebaseapp.com",
@@ -69,10 +69,10 @@ document.getElementById('loginBtn').onclick = () => {
       const user = userCredential.user;
 
       if (user.emailVerified) {
-        showNotification("✅ تم تسجيل الدخول بنجاح");
+        showNotification("✅ Logged in successfully.");
       } else {
         auth.signOut();
-        showNotification("⚠️ لم يتم تأكيد البريد الإلكتروني. تم تسجيل الخروج.");
+        showNotification("⚠️ Email not verified. Logged out.");
       }
 
       localStorage.setItem('authModalClosed', 'true');
@@ -82,7 +82,7 @@ setTimeout(() => {
 
     })
     .catch(() => {
-      showNotification("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      showNotification("❌ Email or password is incorrect.");
       setTimeout(() => {
         location.reload();
       }, 2500);
@@ -91,18 +91,18 @@ setTimeout(() => {
 
 
 
-// تعريف مزود جوجل
+
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// حدث تسجيل الدخول بجوجل
+
 document.getElementById('googleLoginBtn').onclick = () => {
   auth.signInWithPopup(provider)
     .then((result) => {
-      showNotification(`تم تسجيل الدخول كمستخدم: ${result.user.email}`);
+      showNotification(`Logged in as a user: ${result.user.email}`);
       document.getElementById('authModal').classList.add('hidden');
     })
     .catch((error) => {
-      showNotification(`حدث خطأ أثناء تسجيل الدخول بجوجل: ${error.message}`);
+      showNotification(`An error occurred while signing in with Google: ${error.message}`);
     });
 };
 
@@ -112,7 +112,7 @@ document.getElementById('registerBtn').onclick = () => {
   const password = document.getElementById('passwordInput').value;
 
   if (!email.includes('@gmail.com')) {
-    showNotification('يجب أن يحتوي البريد الإلكتروني على @gmail.com');
+    showNotification('The email must contain @gmail.com');
     return;
   }
 
@@ -122,35 +122,35 @@ document.getElementById('registerBtn').onclick = () => {
 
       user.sendEmailVerification()
         .then(() => {
-          showNotification("✅ تم إرسال رسالة تحقق إلى بريدك. لديك 5 دقائق للتأكيد.");
+          showNotification("✅ A verification message has been sent to your email. You have 5 minutes to confirm.");
           
-          // بدء مؤقت حذف بعد 5 دقائق إذا لم يتم تأكيد البريد
+          
           setTimeout(() => {
             user.reload().then(() => {
               if (!user.emailVerified) {
                 user.delete().then(() => {
-                  console.log("تم حذف الحساب لعدم تأكيد البريد خلال 5 دقائق.");
+                  console.log("The account was deleted due to not confirming the email within 5 minutes.");
                 });
               }
             });
           }, 5 * 60 * 1000);
 
-          auth.signOut(); // طرده مؤقتًا حتى يؤكد
+          auth.signOut(); 
         })
         .catch((error) => {
-          showNotification("❌ خطأ في إرسال رسالة التحقق: " + error.message);
+          showNotification("❌ Error sending the verification message: " + error.message);
         });
 
-      // تحديث الصفحة فورًا
+      
       setTimeout(() => {
         location.reload();
       }, 1000);
     })
     .catch((err) => {
       if (err.code === 'auth/email-already-in-use') {
-        showNotification("❌ هذا الإيميل موجود بالفعل");
+        showNotification("❌ This email already exists");
       } else {
-        showNotification("❌ حدث خطأ أثناء إنشاء الحساب: " + err.message);
+        showNotification("❌ An error occurred while creating the account: " + err.message);
       }
       
 
@@ -192,7 +192,7 @@ document.getElementById('addImageBtn').onclick = async () => {
     await db.collection('images').add({
       name,
       url: data.secure_url,
-      device,  // حفظ نوع الجهاز مع الصورة
+      device,   
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -250,9 +250,9 @@ function downloadImage(url, name) {
       a.click();
       a.remove();
       URL.revokeObjectURL(blobUrl);
-      showNotification('✅ تم تحميل الصورة بنجاح');
+      showNotification('✅ The image has been uploaded successfully');
     })
-    .catch(() => showNotification('❌ فشل تحميل الصورة'));
+    .catch(() => showNotification('❌ Failed to upload the image'));
     
 }
 
@@ -316,7 +316,7 @@ async function loadImages(filter = '') {
     const ratingValues = Object.values(ratings);
     const ratingCount = ratingValues.length;
     const totalRating = ratingValues.reduce((a, b) => a + b, 0);
-    const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 'لا يوجد';
+    const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 'None';
     const userRating = user && ratings[user.uid] ? ratings[user.uid] : 0;
 
     function createStars() {
@@ -335,16 +335,16 @@ async function loadImages(filter = '') {
     card.innerHTML = `
       <img src="${data.url}" alt="${data.name}" />
       <div class="image-name">${data.name}</div>
-      <div class="image-device">الجهاز: ${data.device || 'غير محدد'}</div>
+      <div class="image-device">Device: ${data.device || 'غير محدد'}</div>
       <div class="image-rating">
-        <span>⭐ التقييم:</span>
+        <span>⭐ Rating:</span>
         ${createStars()}
-        <div class="average-rating">متوسط التقييم: ${averageRating}</div>
+        <div class="average-rating">Average rating: ${averageRating}</div>
       </div>
       <div class="controls">
         <a href="#"
            ${!user
-             ? 'onclick="showNotification(\'يرجى تسجيل الدخول لتحميل الصور\'); return false;" class="download-btn disabled" aria-disabled="true"'
+             ? 'onclick="showNotification(\'Please log in to download images.\'); return false;" class="download-btn disabled" aria-disabled="true"'
              : `onclick="downloadImage('${data.url}', '${data.name}'); return false;" class="download-btn"`}
         >Download ⬇️</a>
         ${isAdmin ? `
@@ -375,7 +375,7 @@ async function loadImages(filter = '') {
           try {
             const imgRef = db.collection('images').doc(imgId);
             const imgDoc = await imgRef.get();
-            if (!imgDoc.exists) throw new Error("الصورة غير موجودة");
+            if (!imgDoc.exists) throw new Error("The image does not exist.");
 
             const imgData = imgDoc.data();
             const currentRatings = imgData.ratings || {};
@@ -383,11 +383,11 @@ async function loadImages(filter = '') {
 
             await imgRef.update({ ratings: newRatings });
 
-            showNotification('✅ تم حفظ التقييم');
+            showNotification('✅ Rating saved successfully');
             updateStars(rating);
           } catch (err) {
             console.error(err);
-            showNotification('❌ حدث خطأ أثناء حفظ التقييم');
+            showNotification('❌ An error occurred while saving the rating');
           }
         });
       });
@@ -403,7 +403,7 @@ async function loadImages(filter = '') {
   if (totalPages > 1) {
     if (currentPage > 1) {
       const prevBtn = document.createElement('button');
-      prevBtn.textContent = '⬅️ السابق';
+      prevBtn.textContent = '⬅️ Previous';
       prevBtn.onclick = () => {
         currentPage--;
         loadImages(filter);
@@ -412,12 +412,12 @@ async function loadImages(filter = '') {
     }
 
     const pageIndicator = document.createElement('span');
-    pageIndicator.textContent = `الصفحة ${currentPage} من ${totalPages}`;
+    pageIndicator.textContent = `Page ${currentPage} From ${totalPages}`;
     pagination.appendChild(pageIndicator);
 
     if (currentPage < totalPages) {
       const nextBtn = document.createElement('button');
-      nextBtn.textContent = 'التالي ➡️';
+      nextBtn.textContent = 'Next ➡️';
       nextBtn.onclick = () => {
         currentPage++;
         loadImages(filter);
@@ -433,17 +433,17 @@ document.getElementById('deviceFilter').addEventListener('click', e => {
   if (e.target.tagName === 'BUTTON') {
     currentDeviceFilter = e.target.getAttribute('data-device');
 
-    // إزالة التفعيل من جميع الأزرار ثم تفعيل الزر الحالي
+   
     document.querySelectorAll('#deviceFilter button').forEach(btn => btn.classList.remove('active'));
     e.target.classList.add('active');
 
-    // إعادة تحميل الصور مع الفلتر الجديد
+   
     loadImages(document.getElementById('searchInput').value.trim());
   }
 });
 
 
-// فلترة حسب البحث النصي (الاسم)
+
 document.getElementById('searchInput').addEventListener('input', (e) => {
   const query = e.target.value.trim();
   loadImages(query);
@@ -459,7 +459,7 @@ auth.onAuthStateChanged(user => {
     authIcon.innerText = 'Logout';
     authIcon.onclick = () => {
       auth.signOut().then(() => {
-        showNotification('تم تسجيل الخروج');
+        showNotification('Logged out successfully');
       });
     };
   } else {
