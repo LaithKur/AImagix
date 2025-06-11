@@ -4,7 +4,7 @@ function showLanguage(langId) {
       document.getElementById(id).style.display = (id === langId) ? 'block' : 'none';
     });
   }
-  function showLanguage(langId) {
+  function showLanguage1(langId) {
     const sections = ['Arabic-1', 'English-1', 'Deutsch-1'];
     sections.forEach(id => {
       document.getElementById(id).style.display = (id === langId) ? 'block' : 'none';
